@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shopping</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+  <div class="container-fluid">
+      <div class="col-md-2 col-md-offset-10">
+      <% if current_user %>
+      <a href="/">Home</a> | <a href="/sessions" data-method="delete">Logout</a>
+      <% end %>
+  </div>
+
+      <% if flash[:errors] %>
+          <hr>
+
+          <div class="alert alert-danger" role="alert"> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> <% flash[:errors].each do |message| %> <%= message %>. <% end %></div>
+
+      <% end %>
+  <%= yield %>
+
+
+</body>
+</html>

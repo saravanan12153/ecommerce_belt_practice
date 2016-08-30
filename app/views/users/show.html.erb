@@ -1,0 +1,139 @@
+<h2>Hello <%= @user.first_name %>! </h2>
+
+<% if @user.products.exists? %>
+<h4>Here are your items for sale:</h4>
+  <table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Amount</th>
+      <th>Date Posted</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <% @selling_total = 0 %>
+      <% @own_products.each do |p| %>
+      <% if p.sales.exists? %>
+      <% else %>
+      <td><%= p.name %></td>
+      <td><%= number_to_currency(p.price) %></td>
+      <% @selling_total += p.price %>
+      <td><%= p.created_at.strftime("%m-%d-%Y") %></td>
+      <td><form action="/products" method='post'>
+        <input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>
+        <input type="hidden" name="product" value="<%= p.id %>">
+        <input type='hidden' name='_method' value='delete'>
+        <input type='submit' class="btn btn-default" value="Delete">
+          </form></td>
+    </tr>
+      <% end %>
+      <% end %>
+  </tbody>
+  </table>
+  <h5>Selling total: <%= number_to_currency(@selling_total) %></h5>
+  <hr>
+  <h4>Sell more items:</h4>
+
+  <form action='/products' method="post" class="form-horizontal">
+    <input name="authenticity_token" value="<%= form_authenticity_token %>" type="hidden">
+    <div class="form-group">
+    <label class="col-sm-3 control-label">Name</label>
+    <div class="col-sm-4">
+    <input type="text" name="name" class="form-control" placeholder="Product name">
+    </div>
+    </div>
+    <div class="form-group">
+    <label class="col-sm-3 control-label">Price</label>
+    <div class="col-sm-4">
+    <input type="float" name="price" class="form-control" placeholder="0.00">
+    </div>
+    </div>
+    <div class="form-group">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-9"><input class="btn btn-default" type="submit" value="Add"></div>
+    </div>
+  </form>
+
+
+  <h4>Here are items you have sold:</h4>
+  <table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Amount</th>
+      <th>Date Sold</th>
+      <th>Buyer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <% @sold_total = 0 %>
+      <% @own_products.each do |p| %>
+      <% if p.sales.exists? %>
+      <td><%= p.name %></td>
+      <td><%= number_to_currency(p.price) %></td>
+      <% @sold_total+= p.price %>
+      <td><%= p.sales.first.created_at.strftime("%m-%d-%Y") %></td>
+      <td><%= p.sales.first.buyer.first_name %> <%= p.sales.first.buyer.last_name %></td>
+      <% else %>
+    </tr>
+      <% end %>
+      <% end %>
+  </tbody>
+  </table>
+  <h5>Sold total: <%= number_to_currency(@sold_total) %></h5>
+<% else %>
+<h4>You do not have items for sale or items that have sold.</h4>
+<h4>Sell an item:</h4>
+
+<form action='/products' method="post" class="form-horizontal">
+  <input name="authenticity_token" value="<%= form_authenticity_token %>" type="hidden">
+  <div class="form-group">
+  <label class="col-sm-3 control-label">Name</label>
+  <div class="col-sm-4">
+  <input type="text" name="name" class="form-control" placeholder="Product name">
+  </div>
+  </div>
+  <div class="form-group">
+  <label class="col-sm-3 control-label">Price</label>
+  <div class="col-sm-4">
+  <input type="float" name="price" class="form-control" placeholder="0.00">
+  </div>
+  </div>
+   <input class="btn btn-default" type="submit" value="Add">
+</form>
+<% end %>
+
+
+<% if @purchases.exists? %>
+<h4>Here are items you have bought:</h4>
+<h5>See more products <a href="/products">here</a></h5>
+<table class="table table-hover">
+<thead>
+  <tr>
+    <th>Name</th>
+    <th>Amount</th>
+    <th>Date Bought</th>
+    <th>Seller</th>
+  </tr>
+</thead>
+<tbody>
+  <% @bought_total = 0 %>
+  <% @purchases.each do |p| %>
+  <tr>
+
+    <td><%= p.name %></td>
+    <td><%= number_to_currency(p.price) %></td>
+    <% @bought_total += p.price %>
+    <td><%= p.sales.first.created_at.strftime("%m-%d-%Y") %></td>
+    <td><%= p.sales.first.product.seller.first_name %> <%= p.sales.first.product.seller.last_name %></td>
+  </tr>
+  <% end %>
+</tbody>
+</table>
+<h5>Bought total: <%= number_to_currency(@bought_total) %></h5>
+<% else %>
+<h4>You have not purchased anything. <a href="/products">Shop around</a>.</h4>
+<% end %>
