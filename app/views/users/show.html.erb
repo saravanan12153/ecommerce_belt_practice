@@ -34,6 +34,7 @@
   </table>
   <h5>Selling total: <%= number_to_currency(@selling_total) %></h5>
   <hr>
+
   <h4>Sell more items:</h4>
 
   <form action='/products' method="post" class="form-horizontal">
@@ -56,7 +57,7 @@
     </div>
   </form>
 
-
+  <% if p.sales.exists? %>
   <h4>Here are items you have sold:</h4>
   <table class="table table-hover">
   <thead>
